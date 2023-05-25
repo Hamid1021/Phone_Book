@@ -1,5 +1,6 @@
 # Phone_Book
 Phone_Book With Django Example Of Ajax
+
 after active venv use this commands
 
 manage.py makemigrations
