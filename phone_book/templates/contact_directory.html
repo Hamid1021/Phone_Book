@@ -1,0 +1,233 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>دفترچه تلفن</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="{% static 'css/bootstrap4.5.min.css' %}" rel="stylesheet">
+        <style type="text/css">
+    	    body{
+                background: #eff3f6;
+                margin-top:20px;
+            }
+            .thumb-lg {
+                height: 88px;
+                width: 88px;
+            }
+            .card {
+                border: none;
+                box-shadow: 1px 0px 20px rgba(0, 0, 0, 0.05);
+            }
+            .m-b-30 {
+                margin-bottom: 30px;
+            }
+            .social-links li a {
+                -webkit-border-radius: 50%;
+                background: #fcfdfd;
+                border-radius: 50%;
+                color: #9f9f9f;
+                display: inline-block;
+                height: 30px;
+                line-height: 30px;
+                text-align: center;
+                width: 30px;
+            }
+        </style>
+    </head>
+    <body>
+        <link href="{% static 'css/font-awesome.min.css' %}" rel="stylesheet" />
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <a class="navbar-brand" style="cursor: pointer;">
+                    <img width="50" src="{{book_owner.avatar.avatar.url}}"/>
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item active">
+                            <a class="nav-link" style="cursor: pointer;">{{book_owner.user.get_full_name}} | {{book_owner.user.username}}<span class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'phone_book:books' %}">صفحه اصلی</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'phone_book:profile' %}">پروفایل</a>
+                        </li>
+                        {% if request.user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'account:logout'%}">خروج از حساب</a>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'account:login'%}">ورود به حساب</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </nav>
+        </div>
+        
+        <div class="container">
+            <form class="m-2">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="PersoneNameID">نام مخاطب</label>
+                        <input title="نام را وارد نمایید" required type="text" class="form-control" id="PersoneNameID">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="PersoneLastNameID">نام خانوادگی مخاطب</label>
+                        <input title="نام خانوادگی را وارد نمایید" required type="text" class="form-control" id="PersoneLastNameID">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="PersoneAvatarID">آواتار مخاطب</label>
+                        <div class="table-responsive">
+                            <table>
+                                <tr>
+                                    {% for avatar in avatars %}
+                                    {% if forloop.first %}
+                                    <th class="p-0">
+                                        <label onclick="bor(this);" for="avatar_{{forloop.counter}}">
+                                            <img style="border:1px rgb(50 173 19) solid;" width="50" class="img-thumbnail d-flex mr-5" src="{{avatar.avatar.url}}" alt="{{avatar.alt}}"/>
+                                        </label>
+                                        <input checked required type="radio" id="avatar_{{forloop.counter}}" name="selectedAvatar" class="d-none" value="{{avatar.pk}}">
+                                    </th>
+                                    {% else %}
+                                    <th class="p-0">
+                                        <label onclick="bor(this);" for="avatar_{{forloop.counter}}">
+                                            <img style="border:none;" width="50" class="img-thumbnail d-flex mr-5" src="{{avatar.avatar.url}}" alt="{{avatar.alt}}"/>
+                                        </label>
+                                        <input type="radio" id="avatar_{{forloop.counter}}" name="selectedAvatar" class="d-none" value="{{avatar.pk}}">
+                                    </th>
+                                    {% endif %}
+                                    {% endfor %}
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="PersonePhoneNumberID">شماره همراه مخاطب</label>
+                        <input required title="شماره همراه با شروع 09 و 11 رقمی وارد نمایید" pattern="09\d{9}" type="text" class="form-control" id="PersonePhoneNumberID">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="PersonePhoneID">شماره تلفن مخاطب</label>
+                        <input title="ابتدا کد شهر سپس شماره را وارد نمایدد" pattern="0\d{15}" type="text" class="form-control" id="PersonePhoneID">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="PersoneJobID">شغل/سمت مخاطب</label>
+                        <input type="text" class="form-control" id="PersoneJobID">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 m-auto">
+                        <button onclick="add_phone_book();" type="button" class="btn btn-success btn-block mt-2 mb-2">افزودن مخاطب</button>
+                    </div>
+                </div>
+            </form>
+            </hr>
+            <div class="row">
+                <div class="col-md-8 mb-3">
+                    <label for="PersoneSearchID">جستجو مخاطب</label>
+                    <input onkeydown="search_item(this);" type="text" class="form-control" id="PersoneSearchID" aria-describedby="PersoneSearch" placeholder="نام یا نام خانوادگی یا بخشی از شماره را وارد نمایید">
+                </div>
+            </div>
+            </hr>
+            <div class="row" id="Phone_Books">
+                {% include 'AllContacts.html' with object_list=object_list %}
+            </div>
+            {% csrf_token %}
+
+        </div>
+<script src="{% static 'js/jquery-1.10.2.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script type="text/javascript">
+
+    function search_item(el){
+        let element = $(el);
+        let query = element.val();
+        $.ajax({
+            type: 'post',
+            url: '/books/search_phone_book',
+            data: {
+                'query' : query,
+                'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+            },
+            //beforeSend: function () {
+            //    $("#product_content").html("");
+            //},
+            success: function (data) {
+                $("#Phone_Books").html(data.posts_html) 
+            }
+        });
+    }
+
+    function delete_item(el){
+        let element = $(el);
+        let el_id = element.data("id");
+        $.ajax({
+            type: 'post',
+            url: '/books/del_phone_book',
+            data: {
+                'el_id' : el_id,
+                'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+            },
+            //beforeSend: function () {
+            //    $("#product_content").html("");
+            //},
+            success: function (data) {
+                if(data.status){
+                    let Phone_Books = $("#Phone_Books").html(data.posts_html) 
+                }
+                //else{
+
+                //}
+            }
+        });
+    };
+    
+    function bor(el){
+        let element = $(el);
+        $("label > img").css({
+            "border": "none"
+        });
+        element.children().css("border", "1px rgb(50 173 19) solid");
+    };
+
+    function add_phone_book() {
+        let PersoneName = $("#PersoneNameID").val();
+        let PersoneLastName = $("#PersoneLastNameID").val();
+        let PersonePhoneNumber = $("#PersonePhoneNumberID").val();
+        let PersonePhone = $("#PersonePhoneID").val();
+        let PersoneJob = $("#PersoneJobID").val();
+        let PersoneAvater = $("input[type='radio'][name='selectedAvatar']:checked").val();
+        $.ajax({
+            type: 'post',
+            url: '/books/add_phone_book',
+            data: {
+                'name' : PersoneName,
+                'last_name' : PersoneLastName,
+                'phone_number' : PersonePhoneNumber,
+                'phone_number_1' : PersonePhone,
+                'post' : PersoneJob,
+                'avatar_id' : PersoneAvater,
+                'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+            },
+            //beforeSend: function () {
+            //    $("#product_content").html("");
+            //},
+            success: function (data) {
+                if(data.status){
+                    let Phone_Books = $("#Phone_Books").html(data.posts_html) 
+                }
+                //else{
+
+                //}
+            }
+        });
+    }
+</script>
+</body>
+</html>

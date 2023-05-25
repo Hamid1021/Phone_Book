@@ -1,0 +1,30 @@
+{% for object in object_list %}
+<div class="col-lg-4">
+    <div class="card m-b-30">
+        <div class="card-body">
+            <div class="media">
+                <img class="d-flex mr-3 rounded-circle img-thumbnail thumb-lg" src="{{object.book_phone.avatar.avatar.url}}" alt="{{object.book_phone.avatar.alt}}"/>
+                <div class="media-body">
+                    <h5 class="mt-0 font-18">{{object.book_phone.name}} {{object.book_phone.last_name}}</h5>
+                    <p class="mt-0 text-muted font-14">{{object.book_phone.phone_number}}</p>
+                    <p class="mt-0 text-muted font-14">{{object.book_phone.phone_number_1}}</p>
+                    <p class="mt-0 text-muted font-14">{{object.book_phone.post}}</p>
+                    <ul class="social-links list-inline mb-0">
+                        <li style="cursor: pointer;" onclick="delete_item(this)" data-id="{{object.pk}}" class="list-inline-item">
+                            <a title data-placement="top" data-toggle="tooltip" class="tooltips">
+                                <i style="color:red;" class="fa fa-remove"></i>
+                            </a>
+                            <span style="color:red;">حذف</span>
+                        </li>
+                        {% comment %} <li id="EditItem_" class="list-inline-item">
+                            <a title data-placement="top" data-toggle="tooltip" class="tooltips" href>
+                                <i style="color:blue;" class="fa fa-edit"></i>
+                            </a>
+                        </li> {% endcomment %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
